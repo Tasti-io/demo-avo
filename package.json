@@ -1,0 +1,11 @@
+{
+  "name": "tasti-demo-avo",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Public demo: one sentence from the owner, three channels, and an agent that checks the page before it reports.",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "check": "node scripts/selftest.mjs"
+  }
+}

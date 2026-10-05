@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avo · a working demo by Tasti.io</title>
+<meta name="description" content="One sentence from the owner, three channels, and an agent that checks the page before it reports.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --ink:#1B1A18;--mid:#57534E;--faint:#8A857D;--rule:#E5E1D8;
+    --paper:#FFFFFF;--canvas:#F3F1EC;--teal:#0F8A7A;--warn:#B4541F;
+  }
+  body{font-family:'DM Sans',system-ui,sans-serif;background:var(--canvas);color:var(--ink);
+       padding:28px 16px 72px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto}
+
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+           text-transform:uppercase;color:var(--teal);margin-bottom:9px}
+  h1{font-family:'DM Serif Display',Georgia,serif;font-size:clamp(27px,3.6vw,40px);line-height:1.12;margin-bottom:9px}
+  .sub{font-size:15px;line-height:23px;color:var(--mid);max-width:66ch}
+
+  .tabs{display:flex;gap:4px;margin:22px 0 0;border-bottom:1px solid var(--rule)}
+  .tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;margin-bottom:-1px;
+       font:inherit;font-size:14px;font-weight:500;color:var(--faint);padding:9px 14px;cursor:pointer;border-radius:6px 6px 0 0}
+  .tab:hover{color:var(--ink)}
+  .tab.is-on{color:var(--ink);border-bottom-color:var(--teal)}
+  .tab:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+
+  .cols{display:grid;grid-template-columns:1.08fr 1fr;gap:18px;margin-top:22px;align-items:start}
+  .card{background:var(--paper);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+  .card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+             padding:14px 18px;border-bottom:1px solid var(--rule)}
+  .card-head h2{font-family:'DM Serif Display',Georgia,serif;font-size:17px;font-weight:400}
+  .stamp{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.07em;color:var(--faint)}
+
+  .console{padding:18px}
+  .ask label{display:block;font-size:13px;color:var(--mid);margin-bottom:8px}
+  textarea{width:100%;font:inherit;font-size:15px;line-height:22px;color:var(--ink);background:#FCFBF8;
+           border:1px solid var(--rule);border-radius:8px;padding:11px 13px;resize:vertical;min-height:74px}
+  textarea:focus{outline:2px solid var(--teal);outline-offset:-1px;background:#fff}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .chip{appearance:none;background:#F7F5F0;border:1px solid var(--rule);border-radius:999px;
+        font:inherit;font-size:12.5px;color:var(--mid);padding:5px 11px;cursor:pointer}
+  .chip:hover{border-color:var(--teal);color:var(--ink)}
+  .count{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);float:right;margin-top:6px}
+
+  .btn{appearance:none;font:inherit;font-size:14px;font-weight:500;border-radius:8px;padding:9px 17px;cursor:pointer;border:1px solid transparent}
+  .btn.primary{background:var(--teal);color:#fff}
+  .btn.primary:hover{filter:brightness(1.07)}
+  .btn.ghost{background:none;border-color:var(--rule);color:var(--mid)}
+  .btn.ghost:hover{color:var(--ink);border-color:var(--faint)}
+  .btn:disabled{opacity:.5;cursor:default}
+  .btn:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  .actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:15px}
+  .linkish{appearance:none;background:none;border:0;padding:0;font:inherit;font-size:12.5px;
+           color:var(--faint);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+  .linkish:hover{color:var(--warn)}
+
+  .turn{margin-top:16px;padding-top:16px;border-top:1px solid var(--rule)}
+  .who{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+       color:var(--faint);margin-bottom:7px}
+  .said{font-size:15px;line-height:23px}
+  .agent{font-size:14.5px;line-height:23px;color:var(--mid)}
+  .agent b{color:var(--ink)}
+
+  .draft{border:1px solid var(--rule);border-radius:8px;margin-top:10px;overflow:hidden}
+  .draft-head{display:flex;justify-content:space-between;gap:10px;align-items:center;
+              background:#FAF8F3;padding:8px 12px;font-size:12px;color:var(--mid);border-bottom:1px solid var(--rule)}
+  .draft-head b{color:var(--ink);font-weight:500}
+  .draft-body{padding:11px 12px;font-size:14.5px;line-height:22px;white-space:pre-wrap}
+  .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.07em;text-transform:uppercase;
+       padding:2px 7px;border-radius:999px;background:#EFEDE7;color:var(--faint)}
+  .tag.live{background:#E6F4F1;color:var(--teal)}
+  .tag.bad{background:#FDF0E8;color:var(--warn)}
+
+  .notice{margin-top:12px;background:#FDF8F4;border:1px solid var(--rule);border-left:2px solid var(--warn);
+          border-radius:0 7px 7px 0;padding:9px 12px;font-size:13px;line-height:20px;color:var(--mid)}
+  .result{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--rule);font-size:14px}
+  .result:last-child{border-bottom:0}
+  .result .n{color:var(--mid)}
+  .result .note{display:block;font-size:12.5px;color:var(--faint);margin-top:2px}
+
+  .frame{width:100%;height:560px;border:0;display:block;background:#F3F1EC}
+  .viewing{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--faint);
+           padding:9px 18px;border-top:1px solid var(--rule);word-break:break-all}
+
+  .prose{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:26px 30px 30px;margin-top:22px}
+  .prose h2{font-family:'DM Serif Display',Georgia,serif;font-size:21px;font-weight:400;margin:30px 0 9px}
+  .prose h2:first-child{margin-top:0}
+  .prose p{font-size:15px;line-height:25px;color:var(--mid);max-width:68ch;margin-bottom:11px}
+  .prose p b{color:var(--ink)}
+  .prose .cta a{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal);text-decoration:none;
+                border-bottom:1px solid var(--teal)}
+
+  footer{margin-top:26px;font-size:13px;color:var(--faint);display:flex;flex-wrap:wrap;gap:6px 18px}
+  footer a{color:var(--teal);text-decoration:none;font-weight:500}
+
+  @media(max-width:860px){
+    .cols{grid-template-columns:1fr}
+    .frame{height:420px}
+    .prose{padding:20px 18px 24px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">A working demo &middot; Tasti.io</div>
+  <h1>Avo</h1>
+  <p class="sub">
+    An owner says one thing. It has to reach the website, Instagram and Google, in three different
+    registers, and somebody has to be sure it actually arrived. Type a sentence below and watch the
+    whole loop run, including the part at the end that most tools skip.
+  </p>
+
+  <div class="tabs" role="tablist" aria-label="Sections">
+    <button class="tab is-on" role="tab" id="tab-loop" aria-controls="panel-loop" aria-selected="true">The loop</button>
+    <button class="tab" role="tab" id="tab-how" aria-controls="panel-how" aria-selected="false" tabindex="-1">How it works</button>
+  </div>
+
+  <div id="panel-loop" role="tabpanel" aria-labelledby="tab-loop">
+    <div class="cols">
+
+      <div class="card">
+        <div class="card-head"><h2>Avo</h2><span class="stamp" id="mode">agent for Harbour &amp; Co</span></div>
+        <div class="console" id="console">
+          <div class="ask">
+            <label for="sentence">Tell Avo what you want announced.</label>
+            <textarea id="sentence" maxlength="280" placeholder="closed saturday, private event, back sunday"></textarea>
+            <span class="count" id="count">0 / 280</span>
+            <div class="chips">
+              <button class="chip" data-fill="closed saturday for a private event, back sunday at 8, the bread order still goes ahead so pickups are fine">closure</button>
+              <button class="chip" data-fill="open until 9pm on fridays from this week, kitchen stops at 8:30, the small plates menu runs all evening">new hours</button>
+              <button class="chip" data-fill="the blueberry tart is back until the end of the month, same baker as last summer, only about forty a day">something new</button>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="go">Ask Avo to draft it</button>
+            </div>
+          </div>
+          <div id="thread"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>harbourandco.example</h2><span class="stamp">the public page</span></div>
+        <iframe class="frame" id="venue" src="/venue" title="The venue's public page"></iframe>
+        <div class="viewing" id="viewing">no announcement published yet</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="panel-how" role="tabpanel" aria-labelledby="tab-how" hidden>
+    <div class="prose">
+      <h2>What the loop is</h2>
+      <p>
+        An owner has one thing to say and four places it needs to be. Writing it four ways takes
+        twenty minutes, and the twenty minutes is not the real cost. The real cost is that one of the
+        four quietly does not happen, and nobody finds out until a customer turns up on a day the
+        room is closed.
+      </p>
+
+      <h2>Where the model works, and where it does not</h2>
+      <p>
+        One model call, in one place: turning your sentence into three drafts, each in the register
+        its channel expects. A banner is a notice, a Meta caption is a note to regulars, a Google
+        Business update is a factual record. That is a writing job, and it is the part a person does
+        worst at 06:40.
+      </p>
+      <p>
+        <b>The model does not publish, does not check and does not report.</b> Those are ordinary
+        code: a signature, an HTTP request, and a search for a string. If a model told you it had
+        verified something, you would have to go and look yourself, and then it has saved you nothing.
+      </p>
+
+      <h2>The step most tools skip</h2>
+      <p>
+        Publishing is handing something off. Almost every tool marks the job done at that moment,
+        because from its side it is done. Then the handoff fails, and the first person to notice is a
+        customer.
+      </p>
+      <p>
+        Here, after you approve, the agent fetches the public page over the network like any visitor,
+        reads the HTML, and looks for the exact words it claims to have put there. The timestamp you
+        see is when it looked, not when it sent.
+      </p>
+      <p>
+        Which is worth nothing unless the check can come back negative, so the demo lets you force
+        that: <b>approve, but break the handoff</b>. The announcement is signed with a corrupted
+        signature, the page refuses to render it, and the agent reports that it went, looked, and did
+        not find its own words. It does not say "published" and hope.
+      </p>
+
+      <h2>What is real here and what is not</h2>
+      <p>
+        The website channel is real. The page is served by this demo, the banner is rendered only
+        against a valid signature, and the verification is a genuine request.
+      </p>
+      <p>
+        Instagram and Google Business are reported as <b>queued</b>, not sent, because this demo has
+        no connector to either. Saying "sent" would be the precise lie the whole thing is built
+        against. On a real account those are live connections and they get verified the same way.
+      </p>
+
+      <h2>On your own announcements</h2>
+      <p>
+        If the loop is useful to you, the question worth answering is which handoff in your week
+        actually fails, and how you currently find out. That is a twenty minute conversation, not a
+        demo.
+      </p>
+      <p class="cta"><a href="mailto:yuriy@tasti.io?subject=Avo">yuriy@tasti.io</a></p>
+    </div>
+  </div>
+
+  <footer>
+    <span>Built by Yuriy Romanyuk</span>
+    <a href="https://www.tasti.io">tasti.io</a>
+    <a href="https://morning-sheet.tasti.io">the morning sheet demo</a>
+    <a href="mailto:yuriy@tasti.io">yuriy@tasti.io</a>
+  </footer>
+</div>
+
+<script type="module" src="/app.js"></script>
+</body>
+</html>

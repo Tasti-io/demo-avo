@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/draft.js": { "maxDuration": 30 },
+    "api/publish.js": { "maxDuration": 10 },
+    "api/venue.js": { "maxDuration": 10 },
+    "api/verify.js": { "maxDuration": 20 }
+  },
+  "rewrites": [{ "source": "/venue", "destination": "/api/venue" }],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    }
+  ]
+}
