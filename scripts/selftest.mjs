@@ -9,6 +9,7 @@ import { sign, verify, breakToken } from "../lib/sign.js";
 import { renderVenue } from "../lib/venue.js";
 import { checkBudget, LIMITS } from "../lib/budget.js";
 import { cannedDraft } from "../lib/canned.js";
+import { cleanKey } from "../lib/draft.js";
 
 let failed = 0;
 const check = (name, cond) => {
@@ -45,6 +46,14 @@ check("a different address is unaffected", checkBudget({ address: "d", sentence:
 process.env.DEMO_LIVE_DRAFTS = "false";
 check("the kill switch stops live drafting", Boolean(checkBudget({ address: "e", sentence: "closed saturday" })));
 delete process.env.DEMO_LIVE_DRAFTS;
+
+console.log("\nthe API key, as pasted by a human");
+const KEY = "sk-ant-api03-" + "a".repeat(80);
+check("a clean key is left alone", cleanKey(KEY) === KEY);
+check("an invisible passenger is removed", cleanKey(KEY + "\u200b\u00a0") === KEY);
+check("surrounding whitespace is removed", cleanKey(` ${KEY}\n`) === KEY);
+check("something that is not a key is refused", cleanKey("hello") === null);
+check("an absent key is refused", cleanKey(undefined) === null);
 
 console.log("\nthe fallback");
 const canned = cannedDraft("closed saturday for a private event");
