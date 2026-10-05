@@ -33,6 +33,7 @@ function showTab(id) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 for (const t of tabs) t.addEventListener("click", () => showTab(t.id));
+document.getElementById("go-how")?.addEventListener("click", () => { showTab("tab-how"); document.getElementById("tab-how").focus(); });
 document.addEventListener("keydown", (e) => {
   if (!tabs.includes(document.activeElement)) return;
   if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
