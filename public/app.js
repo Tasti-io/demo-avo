@@ -92,6 +92,7 @@ async function ask() {
 
   try {
     const draft = await post("/api/draft", { sentence: text });
+    if (draft.declined) { showDeclined(); return; }
     state.draft = draft;
     showDraft(draft);
   } catch (err) {
@@ -100,6 +101,17 @@ async function ask() {
     $("go").disabled = false;
     $("go").textContent = "Ask Avo to draft it";
   }
+}
+
+/* An honest dead end rather than an error. Avo turns a sentence into
+   announcements; a question, an instruction aimed at the model, or an insult is
+   not one, and pretending otherwise would put nonsense on a public page. */
+function showDeclined() {
+  say("avo", `
+    <p class="agent">I cannot put that on a sign.</p>
+    <p class="agent" style="margin-top:8px">I take one sentence from the owner and write it for three
+      channels. I am not a chat, I cannot see your sales, and I will not announce something the
+      owner did not say. Tell me what you want customers to read.</p>`);
 }
 
 /* ---------- step 2: the drafts, unsent ---------- */

@@ -9,7 +9,7 @@ import { sign, verify, breakToken } from "../lib/sign.js";
 import { renderVenue } from "../lib/venue.js";
 import { checkBudget, LIMITS } from "../lib/budget.js";
 import { cannedDraft } from "../lib/canned.js";
-import { cleanKey } from "../lib/draft.js";
+import { cleanKey, draftAnnouncement } from "../lib/draft.js";
 
 let failed = 0;
 const check = (name, cond) => {
@@ -54,6 +54,20 @@ check("an invisible passenger is removed", cleanKey(KEY + "\u200b\u00a0") === KE
 check("surrounding whitespace is removed", cleanKey(` ${KEY}\n`) === KEY);
 check("something that is not a key is refused", cleanKey("hello") === null);
 check("an absent key is refused", cleanKey(undefined) === null);
+
+console.log("\nwhen the request is not an announcement");
+// The model answers in prose rather than calling the tool. That prose must never
+// reach the page: it is a public surface carrying our name, and whatever a stranger
+// can coax out of a model is not something to render.
+const realFetch = globalThis.fetch;
+globalThis.fetch = async () => ({
+  ok: true,
+  json: async () => ({ content: [{ type: "text", text: "I am Claude. Here is a poem about cats." }], usage: {} }),
+});
+const declined = await draftAnnouncement({ sentence: "write a poem", apiKey: "sk-ant-test" });
+check("a refusal comes back as declined, not as an error", declined.declined === true);
+check("the model's own words are not passed through", !JSON.stringify(declined).includes("poem"));
+globalThis.fetch = realFetch;
 
 console.log("\nthe fallback");
 const canned = cannedDraft("closed saturday for a private event");
